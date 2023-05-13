@@ -106,8 +106,8 @@ class GetSettings:
         
         self.AIMBOT_ENABLED             = self.settings.get_boolean('AIMBOT', 'ENABLED') 
         self.AIMBOT_KEY_BIND            = int(self.settings.get('AIMBOT', 'KEY-BIND'), 16)
-        self.AIMBOT_Y_SPEED             = self.settings.get_float('AIMBOT', 'Y-SPEED')
         self.AIMBOT_X_SPEED             = self.settings.get_float('AIMBOT', 'X-SPEED')
+        self.AIMBOT_Y_SPEED             = self.settings.get_float('AIMBOT', 'Y-SPEED')
         
         self.TRIGGERBOT_ENABLED         = self.settings.get_boolean('TRIGGERBOT', 'ENABLED') 
         self.TRIGGERBOT_KEY_BIND        = int(self.settings.get('TRIGGERBOT', 'KEY-BIND'), 16)

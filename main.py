@@ -1,15 +1,14 @@
 import os 
 import sys
 import time
-import keyboard     # pip install keyboard
-import pyautogui    # pip install pyautogui
+import keyboard
+import pyautogui
 import ctypes
-import hashlib
 
-from termcolor import colored  # pip install termcolor
+from termcolor import colored
 
 from Handlers.settingsHandler import GetSettings
-from Handlers.programHandler import *
+from Handlers.programHandler import Program
 
 settings = GetSettings()
 
@@ -21,7 +20,9 @@ def main():
     os.system('color')
     os.system(f"title {settings.GetSetupAppName()}")
     
-    # bettercmd()
+    bettercmd()
+    
+    mainProgram = Program(CENTER_X, CENTER_Y)
     
     print(colored('         ██▀███ ▓████▓██   ██▓    ▄████▄  ▒█████ ▓█████▄▓█████  ██████ ', 'magenta'))
     print(colored('        ▓██ ▒ ██▓█   ▀▒██  ██▒   ▒██▀ ▀█ ▒██▒  ██▒██▀ ██▓█   ▀▒██    ▒ ', 'magenta'))
@@ -44,27 +45,52 @@ def main():
     print(colored('[PROGRAM STATUS]', 'green'))
     # AimBot Status
     if settings.GetAimbotEnabled():
-        print(colored('●', 'yellow'), colored('AimBot \t=\t', 'white'), colored('ENABLED', 'green'))
+        print(colored('●', 'yellow'), colored('AimBot\t\t=\t', 'white'), colored('ENABLED', 'green'))
     else:
-        print(colored('●', 'yellow'), colored('AimBot \t=\t', 'white'), colored('DISABLED', 'red'),)
+        print(colored('●', 'yellow'), colored('AimBot\t\t=\t', 'white'), colored('DISABLED', 'red'),)
     # TriggerBot Status 
     if settings.GetTriggerbotEnabled():
-        print(colored('●', 'yellow'), colored('TriggerBot \t=\t', 'white'), colored('ENABLED', 'green'))
+        print(colored('●', 'yellow'), colored('TriggerBot\t\t=\t', 'white'), colored('ENABLED', 'green'))
     else:
-        print(colored('●', 'yellow'), colored('TriggerBot \t=\t', 'white', colored('DISABLED', 'red'),))
+        print(colored('●', 'yellow'), colored('TriggerBot\t\t=\t', 'white', colored('DISABLED', 'red'),))
     # SilentBot Status
     if settings.GetSilentbotEnabled():
-        print(colored('●', 'yellow'), colored('SilentBot \t=\t', 'white'), colored('ENABLED', 'green'))
+        print(colored('●', 'yellow'), colored('SilentBot\t\t=\t', 'white'), colored('ENABLED', 'green'))
     else:
-        print(colored('●', 'yellow'), colored('SilentBot \t=\t', 'white'), colored('DISABLED', 'red'),)
+        print(colored('●', 'yellow'), colored('SilentBot\t\t=\t', 'white'), colored('DISABLED', 'red'),)
 
     print()
-    
+
     print(colored('[KEY BIND INFORMATION]', 'green'))
-    print(colored('●', 'yellow'), colored(f"Press\t {settings.GetSettingsToggleKey()} \t=\t Toggle ON/OFF", 'white'))
-    print(colored('●', 'yellow'), colored(f"Hold\t {settings.GetAimbotKeyBind()} \t=\t AimBot", 'white'))
-    print(colored('●', 'yellow'), colored(f"Press\t {settings.GetTriggerbotKeyBind()} \t=\t TriggerBot", 'white'))
-    print(colored('●', 'yellow'), colored(f"Hold\t {settings.GetSilentbotKeyBind()} \t=\t SilentBot", 'white'))
+    print(colored('●', 'yellow'), colored(f"Toggle ON/OFF\t\t=\t Press {settings.GetSettingsToggleKey()}", 'white'))
+    print(colored('●', 'yellow'), colored(f"AimBot\t\t=\t Hold {settings.GetAimbotKeyBindConvert()}", 'white'))
+    print(colored('●', 'yellow'), colored(f"TriggerBot\t\t=\t Hold {settings.GetTriggerbotKeyBindConvert()}", 'white'))
+    print(colored('●', 'yellow'), colored(f"SilentBot\t\t=\t Press {settings.GetSilentbotKeyBindConvert()}", 'white'))
+    
+    # try:
+    #     programStatus = True
+    #     print(colored('[STATUS]', 'green'))
+    #     while True:
+    #         if keyboard.is_pressed(settings.GetSettingsToggleKey()):
+                
+                
+    #         print    
+    # except (KeyboardInterrupt, SystemExit):
+    #     print(colored('[INFO]', 'red'), colored('Exiting...\n', 'white'))
+    #     sys.exit()
+    
+    try:
+        print((f"{colored('[STATUS]', 'white', 'on_light_red')}"), end='\n')
+        while True:
+            if keyboard.is_pressed(settings.GetSettingsToggleKey):
+                mainProgram.toggle()
+                status = 'Enabled' if Program.TOGGLED else 'Disabled'
+            print(f"\r{colored(status, 'white')}")
+            time.sleep(0.01)
+
+    except (KeyboardInterrupt, SystemExit):
+        print(colored('[INFO]', 'green'), colored('Exiting...', 'white') + '\n')
+        sys.exit()
     
 def bettercmd():
     hwnd = ctypes.windll.kernel32.GetConsoleWindow()
