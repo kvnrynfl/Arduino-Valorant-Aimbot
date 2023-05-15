@@ -4,9 +4,9 @@ import threading
 import time
 import win32api
 
-from captureHandler import Capture
-from mouseHandler import Mouse
-from settingsHandler import GetSettings
+from Handlers.captureHandler import Capture
+from Handlers.mouseHandler import Mouse
+from Handlers.settingsHandler import GetSettings
 
 
 class Program:
@@ -14,7 +14,7 @@ class Program:
     UPPER_COLOR = np.array([160, 200, 255])
 
     settings = GetSettings()
-    ARDUINO_MOUSE = Mouse()
+    ARDUINO_MOUSE = Mouse(settings.GetSetupComPort())
 
     def __init__(self, CENTER_X, CENTER_Y):
 
@@ -37,12 +37,12 @@ class Program:
         self.SILENTBOT_ENABLED = self.settings.GetSilentbotEnabled()
         self.SILENTBOT_KEY_BIND = self.settings.GetSilentbotKeyBind()
         self.SILENTBOT_ONLY_FLICK = self.settings.GetSilentbotOnlyFlick()
-        
+
         self.FLICKSPEED = self.settings.GetFlickSpeed()
         self.GRABBER = Capture(CENTER_X - self.SETTINGS_X_FOV // 2, CENTER_Y - self.SETTINGS_Y_POV // 2, self.SETTINGS_X_FOV, self.SETTINGS_Y_POV)
 
         threading.Thread(target=self.listen, daemon=True).start()
-        
+
         self.TOGGLED = False
 
         if self.SETTINGS_TARGET_BONE == 'HEAD':
@@ -83,25 +83,21 @@ class Program:
 
             cX = center[0]
             cY = y + self.y_offset
-            cYcenter = center[1] - self.GRABBER.YFOV // 2
-            x_diff = cX - self.GRABBER.XFOV // 2
-            y_diff = cY - self.GRABBER.YFOV // 2
+            cYcenter = center[1] - self.GRABBER.yfov // 2
+            x_diff = cX - self.GRABBER.xfov // 2
+            y_diff = cY - self.GRABBER.yfov // 2
 
             if action == "move":
                 self.ARDUINO_MOUSE.move(
-                    x_diff * self.X_SPEED, y_diff * self.Y_SPEED)
+                    x_diff * self.AIMBOT_X_SPEED, y_diff * self.AIMBOT_Y_SPEED)
 
             elif action == "click":
-                x_threshold = self.settings.get_int(
-                    'TRIGGERBOT', 'X_THRESHOLD')
-                y_threshold = self.settings.get_int(
-                    'TRIGGERBOT', 'Y_THRESHOLD')
+                x_threshold = self.TRIGGERBOT_X_THRESHOLD
+                y_threshold = self.TRIGGERBOT_Y_THRESHOLD
                 if abs(x_diff) <= x_threshold and abs(cYcenter) <= y_threshold:
-                    time.sleep(self.settings.get_float(
-                        'TRIGGERBOT', 'DELAY-BEFORE-SHOOT'))
+                    time.sleep(self.TRIGGERBOT_DELAY_BEFORE)
                     self.ARDUINO_MOUSE.click()
-                    time.sleep(self.settings.get_float(
-                        'TRIGGERBOT', 'DELAY-AFTER-SHOOT'))
+                    time.sleep(self.TRIGGERBOT_DELAY_AFTER)
 
             elif action == "flick":
                 flickx = x_diff * self.FLICKSPEED
